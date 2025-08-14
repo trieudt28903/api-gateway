@@ -9,18 +9,28 @@ spring:
     gateway:
       server:
         webflux:
+          discovery:
+            locator:
+              enabled: true            # Cho phép định tuyến động theo tên service
+              lower-case-service-id: true # Tự chuyển serviceId về lowercase để khớp URI
+
           routes:
             - id: zari-service
-              uri: http://localhost:9005
+              uri: lb://zari-service
               predicates:
                 - Path=/zari/**
 
+            - id: task-service
+              uri: lb://task-service
+              predicates:
+                - Path=/task/**
+
             - id: noti-service
-              uri: http://localhost:8099
+              uri: lb://noti-service
               predicates:
                 - Path=/noti/**
 
-logging:
-  level:
-    org.springframework.cloud.gateway: DEBUG
-    reactor.netty.http.server: DEBUG
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
